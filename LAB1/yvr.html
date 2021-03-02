@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>From YVR to the World</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js"></script>
+
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+.map-overlay {
+        position: absolute;
+        font-family: sans-serif;
+        margin-bottom: 40px;
+        margin-left: 5px;
+        padding: 5px;
+        width: 80%;
+        font-size: 17px;
+        color: #fff;
+      border-radius: 3px;
+      }
+</style>
+</head>
+
+<body>
+<div id="map"></div>
+<div class='map-overlay' id='features'><h2>From YVR to the World (Global major destinations)</h2>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiYm9ieGh6IiwiYSI6ImNrbHEzeTg5ajA2ZXUybm5hcmNwNDgwbDUifQ.WzYgwx1AX5PN-caD7Ufkig';
+var map = new mapboxgl.Map({
+container: 'map',
+style: 'mapbox://styles/bobxhz/cklrpsimn00pl17o656bo8pgw',
+center: [-123,49],
+zoom:1
+});
+
+map.addControl(new mapboxgl.NavigationControl());
+
+map.on('click', function(e) {
+  var features = map.queryRenderedFeatures(e.point, {
+    layers: ['World-airports'] // replace this with the name of the layer
+  });
+
+  if (!features.length) {
+    return;
+  }
+
+  var feature = features[0];
+
+  var popup = new mapboxgl.Popup({ offset: [0, -15] })
+    .setLngLat(feature.geometry.coordinates)
+    .setHTML('<h3>' + feature.properties.name + '</h3><p>' + feature.properties.location + '</p>')
+    .addTo(map);
+});
+
+map.on('click', function(e) {
+  var features = map.queryRenderedFeatures(e.point, {
+    layers: ['airports'] // replace this with the name of the layer
+  });
+
+  if (!features.length) {
+    return;
+  }
+
+  var feature = features[0];
+
+  var popup = new mapboxgl.Popup({ offset: [0, -15] })
+    .setLngLat(feature.geometry.coordinates)
+    .setHTML('<h3>' + feature.properties.AIRPORT_NAME + '</h3><p>' + feature.properties.PHYSICAL_ADDRESS + '</p>')
+    .addTo(map);
+});
+
+
+</script>
+
+</body>
+</html>
