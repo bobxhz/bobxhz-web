@@ -1,4 +1,4 @@
-Map URL: https://ubc-geob472-spring2021.github.io/bobxhz-web/Lab1/yvr.html
+
 
 As many of us know, Vancouver international airport is one of the busiest airports in the north America. And we would expect more traffics coming into YVR after the announce of the future expansion plan. This map is focusing on the flight routings YVR currently operates. The design is to provide map readers a clear image of the international connectivity of YVR by visualizing most of the destinations.
 
