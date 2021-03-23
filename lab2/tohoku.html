@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title></title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet"/>
+  <script src="https://npmcdn.com/@turf/turf/turf.min.js"></script>
+  <style>
+  body {margin: 0;padding: 0;}
+  h2 {
+    margin: 10px;
+    font-size: 1.3em;
+    font-family: Open Sans SemiBold Italic;
+  }
+  h3 {
+  margin: 10px;
+  font-size: 1.2em;
+  }
+  h3 {
+  font-size: 1em;
+  }
+  h4 {
+    margin: 10px;
+    font-size: 1.3em;
+    font-family: Orbitron Black;
+    color: brown
+  }
+  .map-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.8);
+  margin-right: 20px;
+  font-family: Arial, sans-serif;
+  overflow: auto;
+  border-radius: 3px;
+  }
+  #map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  }
+  #features {
+  top: 0;
+  height: 220px;
+  margin-top: 20px;
+  width: 280px;
+  }
+  #legend {
+  padding: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  line-height: 18px;
+  height: 150px;
+  margin-bottom: 40px;
+  width: 100px;
+  }
+  .legend-key {
+  display: inline-block;
+  border-radius: 20%;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+  }
+  .mapboxgl-popup {
+    position:absolute;
+    top:10px;
+    left: 10px;
+  max-width: 400px;
+  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  background:#fff;
+  box-shadow: 3px 3px 2px #8B5D33;
+  padding:10px;
+  border-radius:3px;
+
+  #fly {
+display: block;
+position: relative;
+margin: 0px auto;
+width: 50%;
+height: 40px;
+padding: 10px;
+border: none;
+border-radius: 3px;
+font-size: 12px;
+text-align: center;
+color: #fff;
+background: #ee8a65;
+  </style>
+ </head>
+
+<body>
+  <div id='map'></div>
+  <div class='map-overlay' id='features'>
+    <h2>2011 Tōhoku earthquake and tsunami impact overview</h2>
+    <div id='pd'>
+      <p>- Hover over a prefecture to see casualty report.</p>
+      <p>- Please zoom to each highlighted prefecture to discover more clean energy site!</p>
+    </div>
+  </div>
+  <div class='map-overlay' id='legend'></div>
+
+  <script>
+  mapboxgl.accessToken = 'pk.eyJ1IjoiYm9ieGh6IiwiYSI6ImNrbHEzeTg5ajA2ZXUybm5hcmNwNDgwbDUifQ.WzYgwx1AX5PN-caD7Ufkig';
+
+  var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/bobxhz/ckml4n0x4c8ro17qm26r2jqib',
+    center: [141.688441,38.814733],
+    zoom:6.5
+    });
+
+  map.on('load', function() {
+      map.getCanvas().style.cursor = 'default';
+    });
+    map.getCanvas().style.cursor = 'default';
+
+    var layers = ['0-1000 death', '1000-4000 death', '4000-9000 death', '9000+ death'];
+    var colors = ['#F6ED6A', '#EC7032', '#F96767', '#FD0D0D'];
+
+    for (i = 0; i < layers.length; i++) {
+    var layer = layers[i];
+    var color = colors[i];
+    var item = document.createElement('div');
+    var key = document.createElement('span');
+    key.className = 'legend-key';
+    key.style.backgroundColor = color;
+
+    var value = document.createElement('span');
+    value.innerHTML = layer;
+    item.appendChild(key);
+    item.appendChild(value);
+    legend.appendChild(item);
+    }
+
+
+  map.on('click', function(e) {
+      var features = map.queryRenderedFeatures(e.point, {
+        layers: ['powerpoints-budm60']
+      });
+
+      if (!features.length) {
+        return;
+      }
+
+      var feature = features[0];
+
+      var popup = new mapboxgl.Popup()
+        .setLngLat(feature.geometry.coordinates)
+        .setHTML( '<h3>' + feature.properties.description + '</h3>')
+        .addTo(map);
+      });
+
+  map.on('mousemove', function(e) {
+      var country = map.queryRenderedFeatures(e.point, {
+        layers: ['prefectures-1cpake']
+      });
+
+      if (country.length > 0) {
+        document.getElementById('pd').innerHTML =
+        '<h4><strong><em>' + country[0].properties.NAME + '</strong></em></h4>'+
+        '<p><strong><em>' + country[0].properties.Fatalities + '</strong> Death </em></p>'+
+        '<p><strong><em>' + country[0].properties.Missing + '</strong> Missing </em></p>'+
+        '<p><strong><em>' + country[0].properties.Injured + '</strong> Injured </em></p>';
+      } else {
+        document.getElementById('pd').innerHTML = '<p> -Hover over a prefecture to see casualty report. </p>'+
+        '<p>- Please zoom to each highlighted prefecture to discover more clean energy site!</p>'
+      }
+      });
+
+
+    </script>
+  </body>
+
+</html>
