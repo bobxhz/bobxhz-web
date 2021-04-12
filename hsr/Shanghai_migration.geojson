@@ -1,0 +1,21 @@
+{
+"type": "FeatureCollection",
+"name": "Shanghai_migration",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "area": "Jiangsu", "percentage": "27.33", "latitude": 33.003614, "longitude": 119.999354 }, "geometry": { "type": "Point", "coordinates": [ 119.999354, 33.003614 ] } },
+{ "type": "Feature", "properties": { "area": "Anhui", "percentage": "22.71", "latitude": 32.472372, "longitude": 117.0674 }, "geometry": { "type": "Point", "coordinates": [ 117.0674, 32.472372 ] } },
+{ "type": "Feature", "properties": { "area": "Zhejiang", "percentage": "9.39", "latitude": 29.189649, "longitude": 120.132076 }, "geometry": { "type": "Point", "coordinates": [ 120.132076, 29.189649 ] } },
+{ "type": "Feature", "properties": { "area": "Henan", "percentage": "8.36", "latitude": 33.865048, "longitude": 113.782233 }, "geometry": { "type": "Point", "coordinates": [ 113.782233, 33.865048 ] } },
+{ "type": "Feature", "properties": { "area": "Jiangxi", "percentage": "4.99", "latitude": 27.84599, "longitude": 115.778949 }, "geometry": { "type": "Point", "coordinates": [ 115.778949, 27.84599 ] } },
+{ "type": "Feature", "properties": { "area": "Shandong", "percentage": "4.7", "latitude": 36.336406, "longitude": 118.403604 }, "geometry": { "type": "Point", "coordinates": [ 118.403604, 36.336406 ] } },
+{ "type": "Feature", "properties": { "area": "Hubei", "percentage": "2.83", "latitude": 31.171842, "longitude": 112.660385 }, "geometry": { "type": "Point", "coordinates": [ 112.660385, 31.171842 ] } },
+{ "type": "Feature", "properties": { "area": "Fujian", "percentage": "2.48", "latitude": 26.146358, "longitude": 118.084723 }, "geometry": { "type": "Point", "coordinates": [ 118.084723, 26.146358 ] } },
+{ "type": "Feature", "properties": { "area": "Sichuang", "percentage": "2.17", "latitude": 30.917426, "longitude": 101.601041 }, "geometry": { "type": "Point", "coordinates": [ 101.601041, 30.917426 ] } },
+{ "type": "Feature", "properties": { "area": "Hunan", "percentage": "2.13", "latitude": 27.595477, "longitude": 111.762955 }, "geometry": { "type": "Point", "coordinates": [ 111.762955, 27.595477 ] } },
+{ "type": "Feature", "properties": { "area": "Guangdong(Canton)", "percentage": "1.43", "latitude": 24.714827, "longitude": 113.864487 }, "geometry": { "type": "Point", "coordinates": [ 113.864487, 24.714827 ] } },
+{ "type": "Feature", "properties": { "area": "Shanxi", "percentage": "1.42", "latitude": 35.669883, "longitude": 109.42083 }, "geometry": { "type": "Point", "coordinates": [ 109.42083, 35.669883 ] } },
+{ "type": "Feature", "properties": { "area": "Chongqing", "percentage": "1.08", "latitude": 29.513401, "longitude": 107.090545 }, "geometry": { "type": "Point", "coordinates": [ 107.090545, 29.513401 ] } },
+{ "type": "Feature", "properties": { "area": "Hebei", "percentage": "1.01", "latitude": 37.584102, "longitude": 114.962688 }, "geometry": { "type": "Point", "coordinates": [ 114.962688, 37.584102 ] } }
+]
+}
