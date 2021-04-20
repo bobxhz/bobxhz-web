@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8' />
+  <title>Points on a map</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://unpkg.com/jquery@3.2.1/dist/jquery.min.js'></script>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src='https://unpkg.com/turf@3.0.14/turf.min.js'></script>
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.2/build/base-min.css">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.2/build/buttons-min.css">
+  <link rel="stylesheet" href="https://unpkg.com/mapbox-gl@0.34.0/dist/mapbox-gl.css" type="text/css">
+  <link rel="stylesheet" href="style.css" type="text/css">
+
+  <style>
+    h2,
+    h3 {
+      margin: 10px;
+      font-size: 1.2em;
+    }
+
+    h3 {
+      font-size: 1em;
+    }
+
+    p {
+      font-size: 0.85em;
+      margin: 10px;
+      text-align: left;
+    }
+
+
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+
+
+    .map-overlay {
+      position: absolute;
+      padding: 20px;
+      bottom: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.9);
+      margin-left: 100px;
+      font-family: Arial, sans-serif;
+      overflow: auto;
+      border-radius: 13px;
+    }
+
+
+
+    #features {
+      right: 0px;
+      top: 0px;
+      height: 130px;
+      width: 340px;
+    }
+
+
+    #button-fly-ne,
+    #button-fly-cn {
+      font-size: 85%;
+      color: white;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+      background: rgb(28, 130, 65);
+    }
+
+    #menu {
+      background: #fff;
+      position: absolute;
+      z-index: 1;
+      top: 350px;
+      right: 10px;
+      border-radius: 3px;
+      width: 120px;
+      border: 1px solid rgba(0, 0, 0, 0.6);
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    #menu a {
+      font-size: 13px;
+      color: #404040;
+      display: block;
+      margin: 0;
+      padding: 0;
+      padding: 10px;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+      text-align: center;
+    }
+
+    #menu a:last-child {
+      border: none;
+    }
+
+    #menu a:hover {
+      background-color: #f8f8f8;
+      color: #404040;
+    }
+
+    #menu a.active {
+      background-color: #3887be;
+      color: #ffffff;
+    }
+
+    #menu a.active:hover {
+      background: #3074a4;
+    }
+
+    .info-box {
+      position: absolute;
+      right: 30px;
+      bottom: 30px;
+      background: white;
+    }
+  </style>
+
+
+</head>
+
+<body>
+  <nav id="menu"
+    style="font-size: 13px;background: #3887be;border: none;position: absolute;top: 350px;color: white;padding: 10px;width: 100px;cursor: pointer;"
+    onclick="toggleHeatmap()">Toggle Heatmap</nav>
+  <nav id="menu"
+    style="font-size: 13px;background: #3887be;border: none;position: absolute;top: 400px;color: white;padding: 10px;width: 100px;cursor: pointer;"
+    onclick="openNewMap()">Open Flow Map</nav>
+  <div id='map'></div>
+  <div class='map-overlay'
+    style="position: absolute;  padding: 20px;top: 172px;right: 0px;background: white;height: 75px;width: 340px;">
+    <p>- Click the zoom button above to swith study areas.</p>
+    <p>- Zoom into heatmap and explore A-class tourist destinations.</p>
+  </div>
+  <div class='map-overlay' id='features'>
+    <h2> High speed rail system in China </h2>
+    <h2> since 2013 - 2019</h2>
+    <input type="checkbox" id="2013" onclick="changMap('hrs-line-2013')">
+    <label for="2013">2013 HSR</label>
+
+    <input type="checkbox" id="2016" onclick="changMap('hrs-line-2016')">
+    <label for="2016">2016 HSR</label>
+
+    <input type="checkbox" id="2019" onclick="changMap('hrs-line-2019')">
+    <label for="2019">2019 HSR</label>
+
+    <div class='button-line'>
+      <div class='pure-button-group'>
+        <button class="pure-button" id="button-fly-ne">
+          Zoom to Northeastern China
+        </button>
+        <button class="pure-button pure-button-disabled" id="button-fly-cn">
+          Zoom to China
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- info-box -->
+  <div class="info-box">
+    <h2>2011 and 2019 Northeast tourism statistic overview</h2>
+    <div id='pd'>
+      <p>- Hover over one of the three provinces in the northeast to see statistic graph.</p>
+
+    </div>
+    <img id="info-img" style="display: none;" src="./images/1.png">
+  </div>
+
+
+  <script type="text/javascript">
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYWxlY2NhaSIsImEiOiJja2xscWM0bmkwMXRmMnBxajVwcWVxNW8xIn0.4DSIVs1qG6P74Y7bm1tlsA';
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/aleccai/ckndobtc515ye17qv5801usym',
+    });
+
+
+
+    function changMap(clickedLayer) {
+      // var clickedLayer = 'hrs-line-2013'//
+      var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+      // toggle layer visibility by changing the layout object's visibility property
+      if (visibility === 'visible') {
+        map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+        this.className = '';
+      } else {
+        this.className = 'active';
+        map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+      }
+    }
+
+
+    // Heatmap
+    map.on('load', function () {
+
+      map.addSource('destinations', {
+        'type': 'geojson',
+        'data': 'https://bobxhz.github.io/bobxhz-web/hsr/all_destinations.geojson'
+      });
+
+
+      map.addLayer({
+        'id': 'destinations-point',
+        'type': 'circle',
+        'source': 'destinations',
+        'minzoom': 7,
+        'paint': {
+
+          'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            7,
+            ['interpolate', ['linear'],
+              ['get', 'class'], 1, 1, 6, 4
+            ],
+            16,
+            ['interpolate', ['linear'],
+              ['get', 'class'], 1, 5, 6, 50
+            ]
+          ],
+
+          'circle-stroke-color': 'white',
+          'circle-stroke-width': 1,
+          // Transition from heatmap to circle layer by zoom level
+          'circle-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'], 7, 0, 8, 1
+          ]
+        }
+      },
+        'waterway-label'
+      );
+
+      // Mouse-over function
+      map.on('mousemove', function (e) {
+        var country = map.queryRenderedFeatures(e.point, {
+          layers: ['china']
+        });
+        if (country.length > 0) {
+          var properties = country[0].properties
+          switch (properties.name) {
+            case "吉林省":
+              $("#info-img").show()
+              $("#pd").hide()
+              $("#info-img").attr("src", "./images/3.png")
+              break
+            case "黑龙江省":
+              $("#info-img").show()
+              $("#pd").hide()
+              $("#info-img").attr("src", "./images/1.png")
+              break
+            case "辽宁省":
+              $("#info-img").show()
+              $("#pd").hide()
+              $("#info-img").attr("src", "./images/2.png")
+              break
+            default:
+              $("#info-img").hide()
+              $("#pd").show()
+          }
+        } else {
+          $("#info-img").hide()
+          $("#pd").show()
+        }
+      });
+
+    });
+
+    //click on destination to view informations in a popup
+    map.on('click', 'destinations-point', function (e) {
+      new mapboxgl.Popup()
+        .setLngLat(e.features[0].geometry.coordinates)
+        .setHTML('<b>Name:</b> ' + e.features[0].properties.name + '<b> Class:</b> ' + e.features[0].properties.class)
+        .addTo(map);
+    });
+
+
+
+    // Fly-to fuction
+    var all_buttons = '#button-fly-ne, #button-fly-cn';
+
+    $('#button-fly-ne').on('click', function () {
+      $(all_buttons).removeClass('pure-button-disabled');
+      map.flyTo({
+        center: [125.653436, 46.510356],
+        zoom: 4.9
+      });
+    });
+    $('#button-fly-cn').on('click', function () {
+      $(all_buttons).removeClass('pure-button-disabled');
+      map.flyTo({
+        center: [110, 37],
+        zoom: 3.5
+      });
+    });
+
+    var deactivate = function () {
+      var center = map.getCenter().toArray();
+      $(all_buttons).removeClass('pure-button-disabled');
+      console.log(turf.distance(center, hambourg));
+      if (turf.distance(center, northeastern) < 2) {
+        $('#button-fly-ne')
+          .addClass('pure-button-disabled')
+      } else if (turf.distance(center, china) < 2) {
+        $('#button-fly-cn')
+          .addClass('pure-button-disabled')
+      }
+    };
+
+    // Map switch
+    function openNewMap() {
+      location.href = "./flowmap.html"
+    }
+
+    // Heatmap control
+    function toggleHeatmap() {
+      if (map.getLayer('Toggle Heatmap')) {
+        var toggleableLayerIds = ['Toggle Heatmap'];
+        var visibility = map.getLayoutProperty(
+          'Toggle Heatmap',
+          'visibility'
+        );
+        if (visibility === 'visible') {
+          map.setLayoutProperty(
+            'Toggle Heatmap',
+            'visibility',
+            'none'
+          );
+        } else {
+          map.setLayoutProperty(
+            'Toggle Heatmap',
+            'visibility',
+            "visible"
+          );
+        }
+      } else {
+        map.addLayer({
+          'id': 'Toggle Heatmap',
+          'type': 'heatmap',
+          'source': 'destinations',
+          'maxzoom': 9,
+          'layout': {
+            'visibility': 'visible'
+          },
+          "paint": {
+            'heatmap-weight': [
+              'interpolate',
+              ['linear'],
+              ['get', 'class'], 1, 0, 62, 1
+            ],
+
+            'heatmap-intensity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'], 0, 0.7, 90, 1
+            ],
+
+            'heatmap-color': [
+              'interpolate',
+              ['linear'],
+              ['heatmap-density'],
+              0, 'rgba(224,235,235,0)',
+              0.2, 'rgb(193,215,215)',
+              0.4, 'rgb(162,195,195)',
+              0.6, 'rgb(131,175,175)',
+              0.8, 'rgb(90,140,140)'
+            ],
+
+            'heatmap-radius': [
+              'interpolate',
+              ['linear'],
+              ['zoom'], 0, 2, 9, 40
+            ],
+            // Transition from heatmap to circle layer by zoom level
+            'heatmap-opacity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'], 7, 1, 9, 0
+            ]
+          }
+        },
+          'waterway-label'
+        );
+
+      }
+    }
+  </script>
+</body>
+
+</html>
